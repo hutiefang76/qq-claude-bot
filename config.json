@@ -1,0 +1,85 @@
+{
+  "server_info": {
+    "name": "腾讯云服务器",
+    "ip": "101.35.227.232",
+    "os": "Ubuntu 22.04.4 LTS",
+    "kernel": "5.15.0-113-generic",
+    "cpu": "4核",
+    "memory": "3.3GB",
+    "disk": "59GB",
+    "software": {
+      "docker": "27.0.3",
+      "java": "OpenJDK 17.0.17",
+      "python": "3.10.12",
+      "node": "20.19.6",
+      "mysql": "8.4.7 (Docker)",
+      "redis": "8.4.0 (Docker)"
+    },
+    "services": {
+      "clash": "VPN代理",
+      "antigravity-manager": "Claude API代理 (端口8045)",
+      "napcat": "QQ机器人框架 (端口3000/3001)",
+      "qq-claude-bot": "本机器人服务",
+      "mysql": "数据库 (端口3306)",
+      "redis": "缓存 (端口6379)",
+      "openresty": "Web服务器"
+    }
+  },
+  "skills": {
+    "/资源": {
+      "desc": "服务器资源概览",
+      "cmd": "echo \"📊 服务器资源\"; echo \"内存:\"; free -h | grep -E \"Mem|Swap\"; echo \"\n磁盘:\"; df -h / | tail -1; echo \"\nCPU负载:\"; uptime | awk -F\"load average:\" \"{print \\$2}\""
+    },
+    "/docker": {
+      "desc": "Docker容器状态",
+      "cmd": "docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\" | head -15"
+    },
+    "/服务": {
+      "desc": "核心服务状态",
+      "cmd": "systemctl is-active clash qq-claude-bot docker 2>/dev/null | paste - - - | awk \"{print \\\"Clash:\\\"\\$1\\\" Bot:\\\"\\$2\\\" Docker:\\\"\\$3}\"; echo \"容器:\"; docker ps --format \"{{.Names}}: {{.Status}}\" | head -8"
+    },
+    "/网络": {
+      "desc": "网络端口状态",
+      "cmd": "ss -tlnp | grep -E \"LISTEN\" | awk \"{print \\$4}\" | sort -u | head -15"
+    },
+    "/进程": {
+      "desc": "高资源进程",
+      "cmd": "ps aux --sort=-%mem | awk \"NR<=8{printf \\\"%-10s %5s%% %s\\n\\\", \\$1, \\$4, \\$11}\""
+    },
+    "/清理": {
+      "desc": "清理系统垃圾",
+      "cmd": "sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null; docker system prune -f 2>/dev/null | tail -1; echo \"✅ 清理完成\""
+    },
+    "/安全": {
+      "desc": "安全检查",
+      "cmd": "echo \"最近登录失败:\"; lastb 2>/dev/null | head -5 || echo \"无记录\"; echo \"\n当前连接:\"; ss -tn | grep ESTAB | awk \"{print \\$5}\" | cut -d: -f1 | sort | uniq -c | sort -rn | head -5"
+    },
+    "/日志": {
+      "desc": "查看服务日志 (用法: /日志 服务名)",
+      "cmd": "journalctl -u {arg} -n 20 --no-pager 2>/dev/null || echo \"服务不存在\""
+    }
+  },
+  "command_reference": {
+    "linux": {
+      "文件操作": ["ls -la", "cd", "cp", "mv", "rm", "mkdir", "chmod", "chown", "find", "grep"],
+      "系统监控": ["top", "htop", "free -h", "df -h", "du -sh", "uptime", "uname -a"],
+      "进程管理": ["ps aux", "kill", "pkill", "systemctl", "service"],
+      "网络": ["netstat", "ss", "curl", "wget", "ping", "traceroute", "ip addr"],
+      "用户": ["whoami", "id", "useradd", "passwd", "su", "sudo"],
+      "压缩": ["tar", "gzip", "zip", "unzip"],
+      "文本": ["cat", "head", "tail", "less", "vim", "nano", "awk", "sed"]
+    },
+    "docker": {
+      "容器": ["docker ps", "docker start/stop/restart", "docker logs", "docker exec -it"],
+      "镜像": ["docker images", "docker pull", "docker build", "docker rmi"],
+      "管理": ["docker-compose up/down", "docker system prune", "docker stats"],
+      "网络": ["docker network ls", "docker network inspect"]
+    },
+    "java": {
+      "运行": ["java -jar app.jar", "java -Xmx512m -jar app.jar"],
+      "调试": ["jps", "jstack <pid>", "jmap -heap <pid>", "jstat -gc <pid>"],
+      "Maven": ["mvn clean install", "mvn package", "mvn test"],
+      "Gradle": ["gradle build", "gradle bootRun"]
+    }
+  }
+}
