@@ -1,0 +1,8 @@
+{
+    "napcat_http_url": "http://localhost:3000",
+    "napcat_ws_url": "ws://localhost:3001",
+    "claude_api_url": "http://localhost:8045",
+    "master_qq": "YOUR_QQ_NUMBER",
+    "bot_qq": "BOT_QQ_NUMBER",
+    "allowed_groups": []
+}
